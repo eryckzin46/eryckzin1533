@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blue Love Heart</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#000;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    font-family:Arial, sans-serif;
+}
+
+canvas{
+    display:block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let angle = 0;
+
+// um pouco mais de textos
+const NUM_STEPS = 58;
+
+const SCALE = 15;
+const TEXT = "eu te amo";
+
+function heartX(t){
+    return 16 * Math.pow(Math.sin(t), 3);
+}
+
+function heartY(t){
+    return 13 * Math.cos(t)
+         - 5 * Math.cos(2 * t)
+         - 2 * Math.cos(3 * t)
+         - Math.cos(4 * t);
+}
+
+function draw(){
+
+    // limpa mais rápido
+    // menos acúmulo
+    ctx.fillStyle = "rgba(0,0,0,0.24)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    ctx.font = "bold 13px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    for(let i = 0; i < NUM_STEPS; i++){
+
+        const t = (Math.PI * 2 / NUM_STEPS) * i + angle;
+
+        const x = heartX(t) * SCALE;
+        const y = -heartY(t) * SCALE;
+
+        // fade equilibrado pros 2 lados
+        const fade = 0.4 + ((Math.sin(t + angle) + 1) / 2) * 0.6;
+
+        // azul neon bonito
+        const blue = 210 + fade * 45;
+
+        ctx.fillStyle = `rgba(80,170,${blue},${fade})`;
+
+        // brilho
+        ctx.shadowColor = `rgba(0,180,255,${fade})`;
+        ctx.shadowBlur = 18;
+
+        ctx.fillText(TEXT, cx + x, cy + y);
+    }
+
+    // velocidade lenta
+    angle += 0.0025;
+
+    requestAnimationFrame(draw);
+}
+
+draw();
+
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>
